@@ -33,7 +33,7 @@ To run locally, you need to update `dbt-core` and `dbt-databricks` to 1.3 or lat
 ```bash
 $ python3 -m venv dbt_py
 $ source dbt_py/bin/activate
-$ (dbt_py) pip install --upgrade dbt-core dbt-databricks
+$ (dbt_py) pip install --upgrade 'dbt-core~=1.3.0' 'dbt-databricks~=1.3.0'
 $ (dbt_py) which python3
 ```
 
@@ -49,6 +49,20 @@ $ which python3
 ### dbt deps
 
 Run `dbt deps`.
+
+### Source external tables
+
+Admin setup: create the `ecommerce` schema in Databricks:
+
+```sql
+create schema if not exists ecommerce
+```
+
+Run the external tables operation:
+
+```bash
+$ (dbt_py) dbt run-operation stage_external_sources
+```
 
 ### Run or build
 
