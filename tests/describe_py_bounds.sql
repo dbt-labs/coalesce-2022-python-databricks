@@ -6,10 +6,10 @@ select
     *
 from {{ ref('describe_py') }}
 where (
-    summary = 'mean' and
+    metric = 'mean' and
     count_drink_items < .8
 ) or 
 (
-    summary = 'stddev' and
+    metric = 'std' and
     subtotal > 20
 )
