@@ -1,0 +1,7 @@
+# cannot color from .dbt_project.yml, see https://github.com/dbt-labs/dbt-core/issues/5974
+version: 2
+
+analyses:
+  - name: analysis
+    docs:
+      node_color: "gray"

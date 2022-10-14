@@ -1,9 +1,0 @@
-
-version: 2
-
-models:
-  - name: int_customers
-    description: Customer overview intermediate data.
-
-  - name: int_orders
-    description: Order overview intermediate data.

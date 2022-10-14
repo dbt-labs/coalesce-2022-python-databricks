@@ -20,6 +20,8 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
 
+  # TODO: update for the workshop
+  # update to the cluster_id to run Python models on
   +cluster_id: 0930-015510-ur6hdc0p
 
   demo_data:
@@ -33,10 +35,6 @@ models:
       +docs:
         node_color: "CadetBlue"
 
-    intermediate:
-      +docs:
-        node_color: "MediumBlue"
-
     marts:
       +docs:
         node_color: "MediumSlateBlue"
@@ -46,16 +44,14 @@ models:
         node_color: "Maroon"
 
     challenges:
-      py:
+      +docs:
+        node_color: "Violet"
+      basics:
         +docs:
           node_color: "Indigo"
-        experiMentaL:
-          +docs:
-            node_color: "Orchid"
-
-      sql:
+      ml:
         +docs:
-          node_color: "DarkMagenta"
+          node_color: "Orchid"
 
 tests:
   +docs:
