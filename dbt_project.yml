@@ -20,10 +20,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 
 models:
 
-  # TODO: update for the workshop
-  # update to the cluster_id to run Python models on
-  +cluster_id: 0930-015510-ur6hdc0p
-
   demo_data:
 
     # configure variables for use in models

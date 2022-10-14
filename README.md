@@ -12,7 +12,15 @@ Python models in dbt Cloud!
 
 ![py_gif](etc/py_gif.gif)
 
-## Get started
+## Challenges
+
+See [the challenges directory's README.md](models/challenges/README.md).
+
+## Non-workshop dev setup
+
+TODO: rework this
+
+### Get started
 
 Follow these instructions to run yourself.
 
@@ -56,10 +64,6 @@ And generate the docs!
 ```bash
 $ (dbt_py) dbt docs generate && dbt docs serve
 ```
-
-## Challenges
-
-See [the challenges directory's README.md](models/challenges/README.md).
 
 ## Contributing
 
