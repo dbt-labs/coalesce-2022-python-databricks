@@ -4,7 +4,7 @@ def model(dbt, session):
     orders = dbt.ref("orders").pandas_api()
 
     # describe the data
-    described = orders.describe()
+    described = None  # TODO: fix this
 
     # insert the index as the first column
     described.insert(0, "metric", described.index)

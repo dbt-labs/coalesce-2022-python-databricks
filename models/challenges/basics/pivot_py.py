@@ -6,16 +6,11 @@ def model(dbt, session):
     order_items = dbt.ref("stg_order_items").pandas_api()
 
     # list of unique product ids
-    product_ids = sorted(list(set(products["product_id"].unique().to_numpy())))
+    product_ids = None  # TODO: fix this
 
     # get the subtotal for each product_id for each order_id
     order_item_product_subtotals = (
-        order_items.merge(products, on="product_id")
-        .groupby(["order_id", "product_id"])
-        .agg(subtotal=("product_price", "sum"))
-        .reset_index()
-        .pivot(index="order_id", columns="product_id", values="subtotal")
-        .reset_index()
+        # TODO: fix this
     )
 
     # rename the product_id columns to include "subtotal_"
