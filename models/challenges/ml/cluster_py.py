@@ -50,8 +50,7 @@ def model(dbt, session):
     cluster_labels = model.predict(X)
 
     # add cluster labels to orders_with_subtotals
-    temp = ps.DataFrame(data=cluster_labels)
-    temp = temp.rename(columns={0: "cluster_label"})
+    temp = ps.DataFrame(data=cluster_labels, columns=["cluster_label"])
     orders_with_subtotals_and_clusters = orders_with_subtotals.merge(
         temp, left_index=True, right_index=True
     )

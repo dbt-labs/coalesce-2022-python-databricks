@@ -1,5 +1,3 @@
-# TODO: use mlflow?
-
 import pandas as pd
 import pyspark.pandas as ps
 
