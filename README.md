@@ -12,72 +12,31 @@ Python models in dbt Cloud!
 
 ![py_gif](etc/py_gif.gif)
 
+## Setup
+
+You should be setup as part of the workshop. You are expected to develop solutions to the challenges in a Databricks notebook, then transfer the code over to the dbt Cloud IDE for deployment in the dbt DAG.
+
 ## Challenges
 
-See [the challenges directory's README.md](models/challenges/README.md).
+See [workshop.ipynb](workshop.ipynb), intended for use in Databricks notebooks, for more details on the challenges.
 
-## Non-workshop dev setup
+The dbt models in `models/challenges/` in the `main` branch on this repo are intended to fail. Get them working!
 
-TODO: rework this
+### Level 1: Describe the orders table
 
-### Get started
+Use the [describe_py.py](models/challenges/basics/describe_py.py) file.
 
-Follow these instructions to run yourself.
+### Level 2: Pivot the orders table
 
-### Environment
+Use the [pivot_py.py](models/challenges/basics/pivot_py.py) file.
 
-If you're running in dbt Cloud, ensure your environment(s) that need to run Python models are on v1.3+.
+### Level 3: Cluster with KMeans
 
-To run locally, you need to update `dbt-core` and `dbt-databricks` to 1.3 or later. We recommend creating a fresh `venv` and `pip install`ing the packages. The exact steps may vary by your platform, but as an example with an environment named `dbt_py`:
+Use the [cluster_py.py](models/challenges/ml/cluster_py.py) file.
 
-```bash
-$ python3 -m venv dbt_py
-$ source dbt_py/bin/activate
-$ (dbt_py) pip install --upgrade 'dbt-core~=1.3.0' 'dbt-databricks~=1.3.0'
-$ (dbt_py) which python3
-```
+### Level 4: Forecast with Prophet
 
-You can run `dbt --version` to ensure you have v1.3 installed.
-
-To deactivate:
-
-```bash
-$ (dbt_py) deactivate
-$ which python3
-```
-
-### dbt deps
-
-Run `dbt deps`.
-
-### Source external tables
-
-Admin setup: create the `ecommerce` schema in Databricks:
-
-```sql
-create schema if not exists ecommerce
-```
-
-Run the external tables operation:
-
-```bash
-$ (dbt_py) dbt run-operation stage_external_sources
-```
-
-### Run or build
-
-Run individual models or build the entire project!
-
-```bash
-$ (dbt_py) dbt run -s describe_py
-$ (dbt_py) dbt build
-```
-
-And generate the docs!
-
-```bash
-$ (dbt_py) dbt docs generate && dbt docs serve
-```
+Use the [forecast_score_py.py](models/challenges/ml/forecast_train_py.py) file to train and persist the Prophet models, then [forecast_score_py.py](models/challenges/ml/forecast_score_py.py) to load them back in and get the predictions.
 
 ## Contributing
 

@@ -22,7 +22,7 @@ def model(dbt, session):
 
     # drop non-numeric columns TODO: programmatic?
     X = orders_with_subtotals.select_dtypes(
-        include=["float32", "float64", "int64"]
+        include=["float32", "float64", "int32", "int64"]
     ).to_numpy()
 
     if train_new_model:
@@ -59,6 +59,7 @@ def model(dbt, session):
     return orders_with_subtotals_and_clusters
 
 
+# stolen from https://docs.databricks.com/_static/notebooks/machine-learning/feature-store-taxi-example.html
 def get_latest_model_version(model_name):
 
     # assume default incremental integer versioning

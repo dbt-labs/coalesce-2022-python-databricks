@@ -6,7 +6,7 @@ def model(dbt, session):
     # describe the data
     described = orders.describe()
 
-    # insert the index as the first
+    # insert the index as the first column
     described.insert(0, "metric", described.index)
 
     return described
