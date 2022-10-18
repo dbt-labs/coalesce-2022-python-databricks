@@ -6,6 +6,9 @@ from sklearn.cluster import KMeans
 
 def model(dbt, session):
 
+    # comment this out to enable the model
+    dbt.config(enabled=False)
+
     # get variables
     n_clusters = dbt.config.get("suspected_personas")
 

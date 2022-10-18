@@ -7,6 +7,9 @@ from prophet.serialize import model_from_json
 
 def model(dbt, session):
 
+    # comment this out to enable the model
+    dbt.config(enabled=False)
+
     # get trained ML models
     # TODO: filter by trained_at to last X days or something
     models = dbt.ref("forecast_train_py").pandas_api()

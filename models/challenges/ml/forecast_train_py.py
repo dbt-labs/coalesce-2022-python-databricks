@@ -8,6 +8,9 @@ from prophet.serialize import model_to_json
 
 def model(dbt, session):
 
+    # comment this out to enable the model
+    dbt.config(enabled=False)
+
     # dbt configuration
     dbt.config(materialized="incremental")
 

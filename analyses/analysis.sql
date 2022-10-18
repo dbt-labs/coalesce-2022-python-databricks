@@ -1,5 +1,10 @@
 -- challenge 1: describe orders
 
+-- once the challenges are completed, you can uncomment
+-- and use this analysis to see the results in dbt Cloud's IDE
+{#
+
+-- uncomment this once the describe_py model is created
 select * from {{ ref('describe_py') }} limit 10;
 
 -- challenge 2: pivot product subtotals onto orders
@@ -25,3 +30,5 @@ select * from {{ ref('orders' ) }} limit 10;
 select * from {{ ref('customers') }} limit 10;
 
 select * from {{ ref('revenue_weekly_by_location') }} limit 10;
+
+#}

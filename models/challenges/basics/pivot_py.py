@@ -1,5 +1,8 @@
 def model(dbt, session):
 
+    # comment this out to enable the model
+    dbt.config(enabled=False)
+
     # get upstream data
     orders = dbt.ref("orders").pandas_api()
     products = dbt.ref("stg_products").pandas_api()
