@@ -15,9 +15,9 @@ renamed as (
     select
 
         ----------  ids
-        id as order_id,
-        store_id as location_id,
-        customer as customer_id,
+        order_id,
+        location_id,
+        customer_id,
 
         ---------- properties
         cast(order_total / 100.0 as float) as order_total,
