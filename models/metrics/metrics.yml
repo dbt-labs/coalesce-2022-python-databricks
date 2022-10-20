@@ -7,8 +7,8 @@ metrics:
     model: ref('orders')
     description: "Income from all orders less tax"
 
-    type: sum
-    sql: order_total - tax_paid
+    calculation_method: sum
+    expression: order_total - tax_paid
 
     timestamp: ordered_at
     time_grains: [day, week, month, quarter, year]
@@ -22,8 +22,8 @@ metrics:
     model: ref('orders')
     description: "Number of customers with a sale"
 
-    type: count_distinct
-    sql: customer_id
+    calculation_method: count_distinct
+    expression: customer_id
 
     timestamp: ordered_at
     time_grains: [day, week, month, quarter, year]
@@ -36,8 +36,8 @@ metrics:
     model: ref('orders')
     description: "Total expenses per order"
 
-    type: sum
-    sql: order_cost
+    calculation_method: sum
+    expression: order_cost
 
     timestamp: ordered_at
     time_grains: [day, week, month, quarter, year]
@@ -50,8 +50,8 @@ metrics:
     label: Gross Profit
     description: "Revenue minus expenses"
 
-    type: expression
-    sql: "{{ metric('revenue') }} - {{ metric('expenses') }}"
+    calculation_method: expression
+    expression: "{{ metric('revenue') }} - {{ metric('expenses') }}"
 
     timestamp: ordered_at
     time_grains: [day, week, month, quarter, year]
