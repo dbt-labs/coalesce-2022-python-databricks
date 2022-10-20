@@ -2,11 +2,11 @@
 
 -- once the challenges are completed, you can uncomment
 -- and use this analysis to see the results in dbt Cloud's IDE
-{#
+--{#
 
 -- uncomment this once the describe_py model is created
-select * from {{ ref('describe_py') }} limit 10;
-
+select * from {{ ref('describe') }} limit 10;
+{#
 -- challenge 2: pivot product subtotals onto orders
 
 select * from {{ ref('pivot_py') }} limit 10;
