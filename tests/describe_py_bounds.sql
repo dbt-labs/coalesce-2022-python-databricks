@@ -2,6 +2,9 @@
     A SQL test on a Python model!
 */
 
+-- you can enable this test after creating the describe_py model
+{{ config(enabled=False)}}
+
 select
     *
 from {{ ref('describe_py') }}

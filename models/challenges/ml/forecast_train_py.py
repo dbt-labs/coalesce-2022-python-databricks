@@ -1,4 +1,3 @@
-# TODO: use mlflow?
 import pyspark.pandas as ps
 
 from datetime import datetime
@@ -8,6 +7,9 @@ from prophet.serialize import model_to_json
 
 
 def model(dbt, session):
+
+    # comment this out to enable the model
+    dbt.config(enabled=False)
 
     # dbt configuration
     dbt.config(materialized="incremental")
@@ -31,17 +33,10 @@ def model(dbt, session):
 
     # train the ML models per location
     models = [
-        Prophet().fit(revenue[revenue["location"] == location].to_pandas())
-        for location in locations
+        # TODO: fix this
     ]
 
     # persist models
-    df = ps.DataFrame(
-        {
-            "trained_at": [trained_at] * len(locations),
-            "location": locations,
-            "model": [model_to_json(model) for model in models],
-        }
-    )
+    df = None  # TODO: fix this
 
     return df
