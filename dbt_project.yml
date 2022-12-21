@@ -56,3 +56,4 @@ tests:
 vars:
   truncate_timespan_to: "{{ dbt_utils.current_timestamp() }}"
   s3_bucket: "s3://dbt-demo-data-2022/jaffle-shop"
+  surrogate_key_treat_nulls_as_empty_strings: true
