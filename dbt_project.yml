@@ -1,58 +1,285 @@
-name: 'demo_data'
-
-version: '1.0.0'
+name: 'fishtown_internal_analytics'
+version: '1.0'
+require-dbt-version: ">=1.1.0"
 config-version: 2
 
-# This setting configures which "profile" dbt uses for this project.
-profile: 'databricks'
-
 model-paths: ["models"]
-analysis-paths: ["analyses"]
+analysis-paths: ["analysis"]
+target-path: "target"
+clean-targets: ["target", "dbt_modules", "dbt_packages"]
 test-paths: ["tests"]
-seed-paths: ["seeds"]
+seed-paths: ["data"]
 macro-paths: ["macros"]
-snapshot-paths: ["snapshots"]
+asset-paths: ["assets"]
 
-target-path: "target"  # directory which will store compiled SQL files
-clean-targets:         # directories to be removed by `dbt clean`
-  - "target"
-  - "dbt_packages"
+profile: "garage-snowflake"
 
-models:
-
-  demo_data:
-
-    # configure variables for use in models
-    suspected_personas: 5
-
-    +materialized: table
-
-    staging:
-      +docs:
-        node_color: "CadetBlue"
-
-    marts:
-      +docs:
-        node_color: "MediumSlateBlue"
-    
-    metrics:
-      +docs:
-        node_color: "Maroon"
-
-    challenges:
-      +docs:
-        node_color: "Violet"
-      basics:
-        +docs:
-          node_color: "Indigo"
-      ml:
-        +docs:
-          node_color: "Orchid"
+on-run-start:
+    - "{%- if target.user == 'dbt_cloud_user' -%}{{ dbt_snow_mask.create_masking_policy('models') }}{%- endif -%}"
 
 tests:
-  +docs:
-    node_color: "black"
+  +store_failures: true
 
 vars:
-  truncate_timespan_to: "{{ dbt_utils.current_timestamp() }}"
-  s3_bucket: "s3://dbt-demo-data-2022/jaffle-shop"
+  testing_days_of_data: 3
+  surrogate_key_treat_nulls_as_empty_strings: true
+  
+  disable_cold_storage: false
+  cold_storage_default_date: '2022-01-01'
+  cold_storage_default_period: 'month'
+  cold_storage_default_value: '1'
+
+  'snowplow:timezone': 'UTC'
+  'snowplow:page_ping_frequency': 10
+  'snowplow:events': "{{ ref('stg_snowplow_web_events') }}"
+  'snowplow:page_view_lookback_days': 3
+  'snowplow:context:web_page': "{{ ref('stg_snowplow_web_page_contexts') }}"
+  'snowplow:context:performance_timing': "{{ ref('current_snowplow_performance_timing') }}"
+  'snowplow:context:useragent': false
+  'snowplow:pass_through_columns': ["database_source"]
+
+  support_sla_first_response_min_sev1: 120
+  support_sla_first_response_min_sev2: 240
+  support_sla_first_response_min_sev3: 480
+  support_sla_first_response_min_sev4: 720
+  support_sla_close_min: 1440 # we don't have a close SLA, bumping this but will remove in the future
+
+  # Snowmask configuration
+  use_force_applying_masking_policy: true  # Read about force at https://docs.snowflake.com/en/sql-reference/sql/alter-table.html#table-column-actions-tablecolumnaction
+  use_common_masking_policy_db: true
+  common_masking_policy_db: raw
+  common_masking_policy_schema: analytics
+
+  zendesk_schema: fivetran_zendesk
+  zendesk_database: raw
+  using_schedules:            False         #Disable if you are not using schedules
+  using_user_tags:            False         #Disable if you are not using user tags
+  using_organization_tags:    False         #Disable if you are not using organization tags
+
+  hubspot_source:
+    hubspot_database: raw
+    hubspot_schema: fivetran_hubspot
+
+  # Marketing
+  hubspot_marketing_enabled: true                        # Disables all marketing models
+  hubspot_contact_enabled: true                          # Disables the contact models
+  hubspot_contact_list_enabled: false                     # Disables contact list models
+  hubspot_contact_list_member_enabled: false              # Disables contact list member models
+  hubspot_contact_property_enabled: false                 # Disables the contact property models
+  hubspot_email_event_enabled: true                      # Disables all email_event models and functionality
+  hubspot_email_event_bounce_enabled: true
+  hubspot_email_event_delivered_enabled: true
+  hubspot_email_event_click_enabled: true
+  hubspot_email_event_opens_enabled: true
+  hubspot_email_event_sent_enabled: true
+
+  hubspot_email_event_deferred_enabled: false
+  hubspot_email_event_dropped_enabled: false
+  hubspot_email_event_forward_enabled: false
+  hubspot_email_event_print_enabled: false
+  hubspot_email_event_spam_report_enabled: false
+  hubspot_email_event_status_change_enabled: false
+  
+  hubspot_contact_merge_audit_enabled: false               # Enables contact merge auditing to be applied to final models (removes any merged contacts that are still persisting in the contact table)
+
+  # Sales
+
+  hubspot_sales_enabled: false                            # Disables all sales models
+  hubspot_company_enabled: false
+  hubspot_deal_enabled: false
+  hubspot_deal_company_enabled: false
+  hubspot_engagement_enabled: false                       # Disables all engagement models and functionality
+  hubspot_engagement_contact_enabled: false
+  hubspot_engagement_company_enabled: false
+  hubspot_engagement_deal_enabled: false
+  hubspot_engagement_calls_enabled: false
+  hubspot_engagement_emails_enabled: false
+  hubspot_engagement_meetings_enabled: false
+  hubspot_engagement_notes_enabled: false
+  hubspot_engagement_tasks_enabled: false
+
+  hubspot_service_enabled: false                       # Disables all sales models
+
+  email_metrics: ['bounces',
+                'clicks',
+                'deliveries',
+                'opens']
+
+# enable custom fields to be passed through
+  hubspot__contact_pass_through_columns:
+    - name: "property_salesforcecontactid"
+      alias: "salesforce_contact_id"
+  
+  # filter out single-tenant staging sources and other exclusions
+  single-tenant-exclusions:
+    - FIVETRAN_ST_SINGLETENANT_STAGING_PUBLIC
+    - FIVETRAN_ST_SINGLETENANTAZURE_STAGING_PUBLIC
+
+# Ads Reporting 
+  ad_reporting__pinterest_enabled: False
+  ad_reporting__microsoft_ads_enabled: False
+  ad_reporting__linkedin_ads_enabled: True
+  ad_reporting__google_ads_enabled: True
+  ad_reporting__twitter_ads_enabled: False
+  ad_reporting__facebook_ads_enabled: False
+  ad_reporting__snapchat_ads_enabled: False
+  ad_reporting__tiktok_ads_enabled: False
+
+# LinkedIn Ads
+  linkedin_database: raw
+  linkedin_schema: fivetran_linkedin_ads
+  
+# Google Ads
+  api_source: google_ads
+  google_ads_source:
+    google_ads_database: raw
+    google_ads_schema: fivetran_google_ads
+  
+# Social Media Reporting
+  social_media_rollup__twitter_enabled: True
+  social_media_rollup__facebook_enabled: False
+  social_media_rollup__linkedin_enabled: True
+  social_media_rollup__instagram_enabled: False
+
+# LinkedIn Organic
+  linkedin_pages_database: raw
+  linkedin_pages_schema: fivetran_linkedin_organic
+
+# Twitter Organic
+  twitter_organic_database: raw
+  twitter_organic_schema: fivetran_twitter_organic
+
+models:
+  +post-hook:
+    - "grant select on {{this}} to role reporter"
+  +incremental_strategy: delete+insert
+  +on_schema_change: "sync_all_columns"
+
+  fishtown_internal_analytics:
+    util:
+      +materialized: table
+    marts:
+      community:
+        +materialized: table
+      dbt:
+        +materialized: table
+      finance:
+        mrr:
+          utils:
+            +schema: analytics_utils
+            +materialized: table
+        transactions:
+          utils:
+            +schema: analytics_utils
+      github:
+        +materialized: table
+      tasks:
+        +materialized: table
+    staging:
+      cloud_postgres:
+        +materialized: table
+  
+    
+  snowplow:
+    base:
+      optional:
+        +enabled: false
+        snowplow_base_performance_timing_context:
+          +enabled: true
+    identification:
+      default:
+        snowplow_id_map:
+          +enabled: false
+    page_views:
+      optional:
+        +enabled: false
+        snowplow_web_timing_context:
+          +enabled: true
+      default:
+        snowplow_page_views:
+          +enabled: false
+        snowplow_web_events:
+          +enabled: false
+    sessions:
+      default:
+        snowplow_sessions:
+          +enabled: false
+        snowplow_sessions_tmp:
+          +enabled: false
+
+  # disable both pinterest models if not using pinterest ads
+  pinterest:
+    +enabled: false
+  pinterest_source:
+    +enabled: false
+
+  # disable both microsoft ads models if not using microsoft ads
+  microsoft_ads:
+    +enabled: false
+  microsoft_ads_source:
+    +enabled: false
+
+  # disable both linkedin ads models if not using linkedin ads
+  linkedin:
+    +enabled: true
+  linkedin_source:
+    +enabled: true
+
+  # disable both twitter ads models if not using twitter ads
+  twitter_ads:
+    +enabled: false
+  twitter_ads_source:
+    +enabled: false
+
+  # disable all three facebook ads models if not using facebook ads
+  facebook_ads:
+    +enabled: false #IF YOU ARE USING FACEBOOK, DELETE THIS CONFIG, DO NOT SIMPLY SET TO TRUE
+  facebook_ads_source:
+    +enabled: false #IF YOU ARE USING FACEBOOK, DELETE THIS CONFIG, DO NOT SIMPLY SET TO TRUE
+  facebook_ads_creative_history:
+    +enabled: false #IF YOU ARE USING FACEBOOK, DELETE THIS CONFIG, DO NOT SIMPLY SET TO TRUE
+
+  # disable both snapchat ads models if not using snapchat ads
+  snapchat_ads:
+    +enabled: false
+  snapchat_ads_source:
+    +enabled: false
+
+  # disable both tiktok ads models if not using tiktok ads
+  tiktok_ads:
+    +enabled: false
+  tiktok_ads_source:
+    +enabled: false
+  
+  # disable both instagram business models if not using instagram business
+  instagram_business:
+      +enabled: false
+  instagram_business_source:
+      +enabled: false
+
+  # disable both linkedin company pages models if not using linkedin company pages
+  linkedin_pages:
+      +enabled: true
+  linkedin_pages_source:
+      +enabled: true
+
+  # disable both twitter organic models if not using twitter organic
+  twitter_organic:
+      +enabled: true
+  twitter_organic_source:
+      +enabled: true
+
+  # disable all three facebook pages models if not using facebook pages
+  facebook_pages:
+      +enabled: false
+  facebook_pages_source:
+      +enabled: false
+
+seeds:
+  +quote_columns: false
+
+sources:
+  zendesk_source:
+    zendesk:
+      user_tag:
+        +enabled: "{{ var('using_user_tags', false) }}"
