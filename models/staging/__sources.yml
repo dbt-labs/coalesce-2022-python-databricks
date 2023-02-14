@@ -5,7 +5,7 @@ sources:
   - name: ecommerce
     description: E-commerce data
 
-    #database: '{{ env_var("DBT_DEMO_DATABASE", "DBT_DEMO_DATA") }}'
+    database: '{{ env_var("DBT_DEMO_DATABASE", "DBT_DEMO_DATA") }}'
     schema: '{{ env_var("DBT_DEMO_SCHEMA", "ecommerce") }}'
     loader: manual
 
@@ -15,28 +15,91 @@ sources:
         external:
           location: "{{ var('s3_bucket') }}/customers"
           using: parquet
+        columns:
+          - name: id
+            data_type: string
+          - name: name
+            data_type: string
+
       - name: orders
         description: One record per order (consisting of one or more order items)
         external:
           location: "{{ var('s3_bucket') }}/orders"
           using: parquet
+        columns:
+          - name: id
+            data_type: string
+          - name: customer
+            data_type: string
+          - name: ordered_at
+            data_type: string
+          - name: store_id
+            data_type: string
+          - name: subtotal
+            data_type: bigint
+          - name: tax_paid
+            data_type: bigint
+          - name: order_total
+            data_type: bigint
+
       - name: order_items
         description: Items included in an order
         external:
           location: "{{ var('s3_bucket') }}/order_items"
           using: parquet
+        columns:
+          - name: id
+            data_type: string
+          - name: order_id
+            data_type: string
+          - name: sku
+            data_type: string
+
       - name: locations
         description: One record per physical store location
         external:
           location: "{{ var('s3_bucket') }}/locations"
           using: parquet
+        columns:
+          - name: id
+            data_type: string
+          - name: name
+            data_type: string
+          - name: opened_at
+            data_type: string
+          - name: tax_rate
+            data_type: double
+
       - name: products
         description: One record per SKU for items sold in stores
         external:
           location: "{{ var('s3_bucket') }}/products"
           using: parquet
+        columns:
+          - name: sku
+            data_type: string
+          - name: name
+            data_type: string
+          - name: type
+            data_type: string
+          - name: price
+            data_type: bigint
+          - name: description
+            data_type: string
+
       - name: supplies
         description: One record per supply per SKU of items sold in stores
         external:
           location: "{{ var('s3_bucket') }}/supplies"
           using: parquet
+        columns:
+          - name: id
+            data_type: string
+          - name: name
+            data_type: string
+          - name: cost
+            data_type: bigint
+          - name: perishable
+            data_type: boolean
+          - name: sku
+            data_type: string

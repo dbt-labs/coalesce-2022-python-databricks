@@ -40,6 +40,9 @@ models:
         node_color: "Maroon"
 
     challenges:
+      +cluster_id: "{{ env_var('DBT_DATABRICKS_CLUSTER_ID') }}"
+      +submission_method: all_purpose_cluster
+      
       +docs:
         node_color: "Violet"
       basics:
@@ -54,5 +57,5 @@ tests:
     node_color: "black"
 
 vars:
-  truncate_timespan_to: "{{ dbt_utils.current_timestamp() }}"
-  s3_bucket: "s3://dbt-demo-data-2022/jaffle-shop"
+  truncate_timespan_to: "{{ dbt.current_timestamp() }}"
+  s3_bucket: "s3://sales-sandbox-databricks-unity-catalog/jaffle-shop"
