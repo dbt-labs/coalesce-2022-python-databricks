@@ -8,9 +8,6 @@ from prophet.serialize import model_to_json
 
 def model(dbt, session):
 
-    # comment this out to enable the model
-    dbt.config(enabled=False)
-
     # dbt configuration
     dbt.config(materialized="incremental")
 
@@ -33,10 +30,17 @@ def model(dbt, session):
 
     # train the ML models per location
     models = [
-        # TODO: fix this
+        Prophet().fit(revenue[revenue["location"] == location].to_pandas())
+        for location in locations
     ]
 
     # persist models
-    df = None  # TODO: fix this
+    df = ps.DataFrame(
+        {
+            "trained_at": [trained_at] * len(locations),
+            "location": locations,
+            "model": [model_to_json(model) for model in models],
+        }
+    )
 
     return df
